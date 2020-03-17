@@ -12,26 +12,46 @@ import weka.core.converters.CSVLoader;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NominalToString;
+import weka.filters.unsupervised.attribute.Remove;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
-// C:\Users\andur\Programas\wekaData\Proiektua_text_mining\train.csv
-public class DataInterpreter {
-	private String procesedFilesPath = null; //Sortutzako fitxategiak hemen gordeko dira, parent forlder barruan
-	public static void main(String[] args) throws Exception {
-		DataInterpreter DI = new DataInterpreter();
-		String csvPath = args[0];
-		csvPath="C:\\Users\\andur\\Programas\\wekaData\\Proiektua_text_mining\\test.csv";
-		
-		//1. CSV aurreprozezatu erroreak kentzeko
-		File parsedCSV = DI.fileParser(csvPath);
-		//2. arrf fitxategia sortu
-		File newArff = DI.csvToArrf(parsedCSV);
-		//3. StringToWord filtroa aplikatu fitxategiaren textuak hitzetan banantzeko
-		File wordArff = DI.toWordVector(newArff);
+public class GetRaw {
+	private static String procesedFilesPath = null; //Sortutzako fitxategiak hemen gordeko dira, parent forlder barruan
+	/*
+	 * Raw data: Prozesatu gabeko datuak
+	 * 
+	 */
+	
+	public static void main(String[] args) {
+		getRaw(args[0]);
+	}
+	public GetRaw() {
 		
 	}
 	
-	public File fileParser(String originalCSV) {
+	public static File getRaw(String csvPath) {
+		File parsedCSV=null;
+		File newArff=null;
+		try {
+			//1. CSV aurreprozezatu erroreak kentzeko
+			File origFile = new File(csvPath);
+			procesedFilesPath = origFile.getParent()+"\\procesedFiles";
+			parsedCSV = fileParser(origFile);
+		} catch (Exception e) {
+			System.out.println("getRaw - fileParser error");
+		}
+		try {
+			//2. arrf fitxategia sortu
+			newArff = csvToArrf(parsedCSV);
+		} catch (Exception e) {
+			System.out.println("getRaw - csvToArrf error");
+		}
+		return newArff;
+
+	}
+
+	
+	private static File fileParser(File origFile) {
 		/* CSV fitxategia prosezatzen du konfliktorik ez egoteko wekak egiten duen interpretazioarekin
 		 * in: original csv
 		 * out: parsed csv in parent folder
@@ -40,8 +60,7 @@ public class DataInterpreter {
 		File parsedCSV=null;
 		//fitxategia sortu
 		try {
-			File origFile = new File(originalCSV);
-			this.procesedFilesPath = origFile.getParent()+"\\procesedFiles";
+			
 			File parent = new File(procesedFilesPath);
 			if(!parent.isDirectory()) parent.mkdir(); //direktorio ez bada existitzen, horain sortuko du
 			String name = origFile.getName().split("\\.")[0]; //fitxeroaren izena lortzen du, parent barruan
@@ -55,13 +74,16 @@ public class DataInterpreter {
 			//fitxategia prozezatu
 			BufferedReader csvReader = new BufferedReader(new FileReader(origFile));
 			String line;
+			int n = 0;
 				while (true) {
 					line = csvReader.readLine();
 					if(line==null) break;
 				    line = line.replace("'", "`");
-				    //line = line.replace("?", "_?");
+				    line = line.replace("?", "\\?");
+				    if(n!=0) line = line.replace("label", "\\label");
 				    writer.append(line+"\n");
 				    writer.flush();
+				    n++;
 				}
 			csvReader.close();
 		} catch (Exception e) {
@@ -70,8 +92,8 @@ public class DataInterpreter {
 		return parsedCSV;
 	}
 	
-	public File csvToArrf(File parsedCSV) throws IOException {
-		/* CSV fitxategia artu eta arrf-an bihurtu
+	private static File csvToArrf(File parsedCSV) throws IOException {
+		/* CSV fitxategia artu eta arrf-an bihurtu, beharrezkoak ez diren indizeak ezabatu
 		 * in: parsed csv
 		 * out: arrf file in paren folder
 		 * 	return arrf file
@@ -86,22 +108,34 @@ public class DataInterpreter {
 		    loader.setSource(parsedCSV);
 		    data = loader.getDataSet();
 		} catch (Exception e) {
-			System.out.println("csvToArrf- exception loading");
+			System.out.println("csvToArrf - loading exception");
 		}
+		
+		try {
+			Remove removFilter = new Remove();
+			removFilter.setAttributeIndices("1");
+			removFilter.setInputFormat(data);
+			data = Filter.useFilter(data, removFilter);
+		} catch (Exception e) {
+			System.out.println("csvToArrf - remove atribute exception");
+		}
+		
 
 		//arrf filtroa aplikatu nominalToString
 		try {
 			NominalToString filterString = new NominalToString();
-			filterString.setAttributeIndexes("2");
+			filterString.setAttributeIndexes("1");
 			filterString.setInputFormat(data);
 			data = Filter.useFilter(data, filterString);
 		} catch (Exception e) {
-			// TODO: handle exception
+			System.out.println("csvToArrf - nominalToString filter exception");
 		}
+		
+
 
 	    // save ARFF  -  Fitxategia sortu
 		File newArrf = new File(csvPath.replace(".csv", ".arff")); //csv-aren izen eta kokapen bera, baina .arrf
-	    try {
+		try {
 		    ArffSaver saver = new ArffSaver();
 		    saver.setInstances(data);
 		    saver.setFile(newArrf);
@@ -112,43 +146,5 @@ public class DataInterpreter {
 	    return newArrf;
 	}
 	
-	public File toWordVector(File originalArff) {
-		/* Lehen sortutako arrf fitxategiaren textuak hitzetan banatzen du
-		 * in:  originalArff
-		 * out: words.arff in parent folder
-		 * 	  return wordsArff
-		 */
-		//arrf-a kargatu
-		Instances data=null;
-		try {
-			DataSource source = new DataSource(originalArff.getAbsolutePath());
-			data = source.getDataSet();
-		} catch (Exception e) {
-			System.out.println("toWordVector - arrf karga error");
-		}
-		
-		//filtroa aplikatu - String-ak hitzetan banantzeko
-		Instances wordsData=null;
-		try {
-			StringToWordVector filter = new StringToWordVector();
-			filter.setInputFormat(data);
-			wordsData = Filter.useFilter(data, filter);
-		} catch (Exception e) {
-			System.out.println("toWordVector - filter error");
-		}
-		
-		//Fitxategia sortu, words.arrf, filtroa aplikatuta dago
-		File wordsArff = new File(procesedFilesPath+"\\words.arff");
-		try {
-		    ArffSaver saver = new ArffSaver();
-		    saver.setInstances(wordsData);
-		    saver.setFile(wordsArff);
-		    saver.writeBatch();
-		} catch (Exception e) {
-			System.out.println("toWordVector - file creator error");
-		}
-		
-		return wordsArff;
-	}
-
+	
 }
