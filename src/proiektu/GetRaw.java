@@ -23,13 +23,26 @@ public class GetRaw {
 	 */
 	
 	public static void main(String[] args) {
-		getRaw(args[0]);
-	}
-	public GetRaw() {
-		
+		try {
+			getRaw(args[0]);
+		} catch (Exception e) {
+			System.out.println("error: GetRaw");
+		}
 	}
 	
 	public static File getRaw(String csvPath) {
+		/* Aurrebaldintzak: lehen lerroa atributuak definitzen ditu
+		 *     hurrengo lerroak instantziak izango dira komekin bananduak
+		 * in: raw file, without data processsed
+		 * out: 
+		 *    file 1: parsed csv, fixing conflict errors
+		 *    file 2: f1 converted in arrf
+		 * 	  return: f2
+		 * 
+		 * PROIEKTU
+		 * getRawARFF.jar  train train.arff
+		 *    
+		 */
 		File parsedCSV=null;
 		File newArff=null;
 		try {
@@ -81,6 +94,8 @@ public class GetRaw {
 				    line = line.replace("'", "`");
 				    line = line.replace("?", "\\?");
 				    if(n!=0) line = line.replace("label", "\\label");
+				    if(n!=0) line = line.replace("id", "\\id");
+				    if(n!=0) line = line.replace("text", "\\text");
 				    writer.append(line+"\n");
 				    writer.flush();
 				    n++;

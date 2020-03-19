@@ -1,3 +1,3 @@
-module praktikak {
+module wekaProject {
 	requires weka;
 }

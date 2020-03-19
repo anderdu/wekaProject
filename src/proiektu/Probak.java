@@ -18,11 +18,19 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 // C:\Users\andur\Programas\wekaData\Proiektua_text_mining\train.csv
 public class Probak {
 	public static void main(String[] args) throws Exception {
-		String csvPath="C:\\Users\\andur\\Programas\\wekaData\\Proiektua_text_mining\\train.csv";
-		File originalArff = GetRaw.getRaw(csvPath);
-		//3. StringToWord filtroa aplikatu fitxategiaren textuak hitzetan banantzeko
-		File newArff = TransformRaw.toWordVector(originalArff); //TODO puede ser nonsparse o sparse 
-		System.out.println(newArff.getAbsolutePath());
+		String trainCSV="C:\\Users\\andur\\Programas\\wekaData\\Proiektua_text_mining\\train.csv";
+		String testCSV="C:\\Users\\andur\\Programas\\wekaData\\Proiektua_text_mining\\train.csv";
+		// 1. raw datuak dituen fitxategia aurreprosezatu konpatibilitate arazoak ekiditzeko
+		File trainARFF = GetRaw.getRaw(trainCSV);
+		// 2. StringToWord filtroa aplikatu fitxategiaren textuak hitzetan banantzeko
+		File trainBOWarff = TransformRaw.transformRaw(trainARFF,"nonsparsed");
+		// 3. train eta test konpatibleak egin: atributuak eta posizioak berdindu
+		
+		//berdina test-ekin
+		File testARRF = GetRaw.getRaw(trainCSV);
+		File testBOWarff = TransformRaw.transformRaw(testARRF,"nonsparsed"); //TODO puede ser nonsparse o sparse 
+
+		
 	}
 	
 
