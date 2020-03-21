@@ -7,13 +7,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import weka.core.Instances;
-import weka.core.converters.ArffSaver;
 import weka.core.converters.CSVLoader;
-import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NominalToString;
 import weka.filters.unsupervised.attribute.Remove;
-import weka.filters.unsupervised.attribute.StringToWordVector;
 
 public class GetRaw {
 	private static String procesedFilesPath = null; //Sortutzako fitxategiak hemen gordeko dira, parent forlder barruan
@@ -31,8 +28,10 @@ public class GetRaw {
 	}
 	
 	public static File getRaw(String csvPath) {
+		
 		/* Aurrebaldintzak: lehen lerroa atributuak definitzen ditu
 		 *     hurrengo lerroak instantziak izango dira komekin bananduak
+		 *     Ez du arff fitxategiak onartuko
 		 * in: raw file, without data processsed
 		 * out: 
 		 *    file 1: parsed csv, fixing conflict errors
@@ -43,11 +42,13 @@ public class GetRaw {
 		 * getRawARFF.jar  train train.arff
 		 *    
 		 */
+		File origFile = new File(csvPath);
+		String extension = AppUtils.getFileExtension(origFile);
+		if(extension.equals("arff")) return null;
 		File parsedCSV=null;
 		File newArff=null;
 		try {
 			//1. CSV aurreprozezatu erroreak kentzeko
-			File origFile = new File(csvPath);
 			procesedFilesPath = origFile.getParent()+"\\procesedFiles";
 			parsedCSV = fileParser(origFile);
 		} catch (Exception e) {
@@ -59,6 +60,7 @@ public class GetRaw {
 		} catch (Exception e) {
 			System.out.println("getRaw - csvToArrf error");
 		}
+		System.out.println("getRaw --> conversion done");
 		return newArff;
 
 	}
@@ -73,11 +75,10 @@ public class GetRaw {
 		File parsedCSV=null;
 		//fitxategia sortu
 		try {
-			
 			File parent = new File(procesedFilesPath);
 			if(!parent.isDirectory()) parent.mkdir(); //direktorio ez bada existitzen, horain sortuko du
 			String name = origFile.getName().split("\\.")[0]; //fitxeroaren izena lortzen du, parent barruan
-			String newFileName = procesedFilesPath+"\\"+name+"Parsed.csv"; //Sortuko dugun CSV berriaren izena definitu
+			String newFileName = procesedFilesPath+"\\"+name+".csv"; //Sortuko dugun CSV berriaren izena definitu
 			parsedCSV = new File(newFileName);
 			parsedCSV.createNewFile(); //Fisikoki sortu
 			
@@ -101,6 +102,7 @@ public class GetRaw {
 				    n++;
 				}
 			csvReader.close();
+			writer.close();
 		} catch (Exception e) {
 			System.out.println("fileParser - error");
 		}
@@ -145,19 +147,9 @@ public class GetRaw {
 		} catch (Exception e) {
 			System.out.println("csvToArrf - nominalToString filter exception");
 		}
-		
-
-
 	    // save ARFF  -  Fitxategia sortu
 		File newArrf = new File(csvPath.replace(".csv", ".arff")); //csv-aren izen eta kokapen bera, baina .arrf
-		try {
-		    ArffSaver saver = new ArffSaver();
-		    saver.setInstances(data);
-		    saver.setFile(newArrf);
-		    saver.writeBatch();
-	    }catch (Exception e) {
-	    	System.out.println("csvToArrf - saver exception");
-		}
+		AppUtils.ordenagailuanGorde(data,newArrf);
 	    return newArrf;
 	}
 	

@@ -1,3 +1,0 @@
-module wekaProject {
-	requires weka;
-}
