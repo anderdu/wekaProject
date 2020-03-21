@@ -94,7 +94,7 @@ public class MakeCompatible {
 			}
 			System.out.println(newdataTe.numAttributes());
 			System.out.println(dataTr.numAttributes());
-			File compArff = new File(procesedFilesPath + "\\comArff.arff");
+			File compArff = new File(procesedFilesPath + File.separator+"comArff.arff");
 			try {
 				ArffSaver saver = new ArffSaver();
 				saver.setInstances(newdataTe);

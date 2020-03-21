@@ -21,6 +21,7 @@ public class GetRaw {
 	
 	public static void main(String[] args) {
 		try {
+			if(args.length==0) System.out.println("incorrect num arguments");
 			getRaw(args[0]);
 		} catch (Exception e) {
 			System.out.println("error: GetRaw");
@@ -49,7 +50,7 @@ public class GetRaw {
 		File newArff=null;
 		try {
 			//1. CSV aurreprozezatu erroreak kentzeko
-			procesedFilesPath = origFile.getParent()+"\\procesedFiles";
+			procesedFilesPath = origFile.getParent()+File.separator+"procesedFiles";
 			parsedCSV = fileParser(origFile);
 		} catch (Exception e) {
 			System.out.println("getRaw - fileParser error");
@@ -77,8 +78,8 @@ public class GetRaw {
 		try {
 			File parent = new File(procesedFilesPath);
 			if(!parent.isDirectory()) parent.mkdir(); //direktorio ez bada existitzen, horain sortuko du
-			String name = origFile.getName().split("\\.")[0]; //fitxeroaren izena lortzen du, parent barruan
-			String newFileName = procesedFilesPath+"\\"+name+".csv"; //Sortuko dugun CSV berriaren izena definitu
+			String name = origFile.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
+			String newFileName = procesedFilesPath+File.separator+name+".csv"; //Sortuko dugun CSV berriaren izena definitu
 			parsedCSV = new File(newFileName);
 			parsedCSV.createNewFile(); //Fisikoki sortu
 			

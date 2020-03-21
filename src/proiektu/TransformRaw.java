@@ -97,7 +97,7 @@ public class TransformRaw {
 		}
 		
 		if(originalArff.getParentFile().getName().equals("procesedFiles")) procesedFilesPath = originalArff.getParent();
-		else procesedFilesPath = originalArff.getParent()+"\\procesedFiles";
+		else procesedFilesPath = originalArff.getParent()+File.separator+"procesedFiles";
 		//arff-a kargatu
 		Instances data=null;
 		try {
@@ -112,8 +112,6 @@ public class TransformRaw {
 			StringToWordVector filter = new StringToWordVector();
 			filter.setWordsToKeep(1000000);
 			filter.setMinTermFreq(3);
-			System.out.println(TFTransform);
-			System.out.println(IDFTransform);
 			filter.setTFTransform(TFTransform);
 			filter.setIDFTransform(IDFTransform);
 			filter.setAttributeIndices("first-last");
@@ -124,8 +122,8 @@ public class TransformRaw {
 		}
 		
 		//Fitxategia sortu --> nameBOW.arff
-		String name = originalArff.getName().split("\\.")[0]; //fitxeroaren izena lortzen du, parent barruan
-		String newFileName = procesedFilesPath+"\\"+name+"BOW.arff"; //Sortuko dugun CSV berriaren izena definitu
+		String name = originalArff.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
+		String newFileName = procesedFilesPath+File.separator+name+"BOW.arff"; //Sortuko dugun CSV berriaren izena definitu
 		File bowArff = new File(newFileName);
 		//newArff.getAbsolutePath()
 		AppUtils.ordenagailuanGorde(nonSparseData, bowArff);
@@ -161,8 +159,8 @@ public class TransformRaw {
 		}
 		
 		//sparse formatuan fitxategia konputagailuan gorde
-		String name = bowNonSparse.getName().split("\\.")[0]; //fitxeroaren izena lortzen du, parent barruan
-		String newFileName = procesedFilesPath+"\\"+name+".arff"; //Sortuko dugun CSV berriaren izena definitu
+		String name = bowNonSparse.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
+		String newFileName = procesedFilesPath+File.separator+name+".arff"; //Sortuko dugun CSV berriaren izena definitu
 		File bowArff = new File(newFileName);
 		AppUtils.ordenagailuanGorde(dataFiltered, bowArff);
 		return bowArff;
