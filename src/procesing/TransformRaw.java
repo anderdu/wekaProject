@@ -4,7 +4,10 @@
  * 
  */
 
-package proiektu;
+package procesing;
+
+import util.AppUtils;
+
 
 import java.io.File;
 
@@ -21,6 +24,7 @@ public class TransformRaw {
 
 
 	public static void main(String[] args) {
+		AppUtils.disableWarning();
 		try {
 			File arff = new File(args[0]);
 			transformRaw(arff,args[1],args[2]);
@@ -103,6 +107,8 @@ public class TransformRaw {
 		try {
 			DataSource source = new DataSource(originalArff.getAbsolutePath());
 			data = source.getDataSet();
+			data.setClassIndex(data.numAttributes()-1);
+			System.out.println();
 		} catch (Exception e) {
 			System.out.println("error: TransformRaw.toSparse --> arff karga");
 		}
@@ -112,11 +118,12 @@ public class TransformRaw {
 			StringToWordVector filter = new StringToWordVector();
 			filter.setWordsToKeep(1000000);
 			filter.setMinTermFreq(3);
-			filter.setTFTransform(TFTransform);
-			filter.setIDFTransform(IDFTransform);
+			filter.setTFTransform(false); //TFTransform
+			filter.setIDFTransform(false); //IDFTransform
 			filter.setAttributeIndices("first-last");
 			filter.setInputFormat(data);
 			nonSparseData = Filter.useFilter(data, filter);
+			System.out.println(nonSparseData.numAttributes());
 		} catch (Exception e) {
 			System.out.println("TransformRaw.toSparse --> filter error");
 		}

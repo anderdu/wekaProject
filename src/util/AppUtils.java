@@ -1,4 +1,4 @@
-package proiektu;
+package util;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -8,18 +8,18 @@ import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 
 public class AppUtils {
-	static String getFileExtensionn(File file) {
+	public static String getFileExtensionn(File file) {
         String fileName = file.getName();
         if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
         return fileName.substring(fileName.lastIndexOf(".")+1);
         else return "";
 	}
-	static String getFileExtension(File file) {
+	public static String getFileExtension(File file) {
 		if(file.getName().split("[.]").length>1) return file.getName().split("[.]")[1];
 		else return "0";
 	}
 	
-	static void ordenagailuanGordeee(Instances data,File fitx) {
+	public static void ordenagailuanGordeee(Instances data,File fitx) {
 		try {
 		    ArffSaver saver = new ArffSaver();
 		    saver.setInstances(data);
@@ -30,7 +30,7 @@ public class AppUtils {
 		}
 	}
 	
-	static void ordenagailuanGorde(Instances data,File fitx) {
+	public static void ordenagailuanGorde(Instances data,File fitx) {
 		try {
 			//filewriter prestatu
 			FileWriter writer = new FileWriter(fitx);
@@ -53,6 +53,25 @@ public class AppUtils {
 		} catch (Exception e) {
 			System.out.println("ordenagailuanGorde error");
 		}
+	}
+	
+	public static void disableWarning() {
+	    System.err.close();
+	    System.setErr(System.out);
+	}
+	
+	public static int minIndex(Instances data) {
+		int[] count = data.attributeStats(data.classIndex()).nominalCounts;
+		int minValue = count[0];
+		int minIndex = 0;
+		for (int i = 0; i < data.numAttributes()-3; i++) {
+			int val = count[i];
+			if(val<minValue && val!=0) {
+				minValue = val;
+				minIndex = i;
+			}
+		}
+		return minIndex;
 	}
 	
 }

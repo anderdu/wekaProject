@@ -1,4 +1,6 @@
-package proiektu;
+package procesing;
+
+import util.AppUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,6 +22,7 @@ public class GetRaw {
 	 */
 	
 	public static void main(String[] args) {
+		AppUtils.disableWarning();
 		try {
 			if(args.length==0) System.out.println("incorrect num arguments");
 			getRaw(args[0]);
