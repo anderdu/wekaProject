@@ -11,7 +11,6 @@ import util.AppUtils;
 
 import java.io.File;
 
-import weka.core.DictionaryBuilder;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
@@ -38,13 +37,16 @@ public class TransformRaw {
 	public static File[] transformRaw(File inputArff, String pvisualTracking, String model) {
 		/*
 		 * Aurrebaldintzak: arff-aren datuak ez dira nominalak izango, stringToNominal filtroarekin ragazita daude
-		 * in: arff fitxategia String esaldiekin eta clasearekin
-		 * out: fitxategia non hitz bakoitza atributu bat da, 2 emitz mota
-		 * nonsparsed
-		 *      Instantziak esaldiak dira, baina soilik definituz esaldian hitz hori dagoen edo es
-		 *      hitza bitan agertzen bada ez da abisatuko
-		 *      //TODO butzutan hizt batzuk galtzen dira
-		 * 
+		 * in: arff_RAW_fitxategia pvisualTracking(sparse  nonsparse)  model(BOW  TF-IDF)
+		 * out: 
+		 *     file1: trainBOW
+		 *     file2: train_dictionary.txt
+		 *     return f1,f2
+		 *       f1:
+		 *         - sparse     BOW
+		 *         - sparse     TF-IDF
+		 *         - nonsparse  BOW
+		 *         - nonsparse  TF-IDF
 		 * 
 		 * PROIEKTU
 		 * TransformRaw.jar 
@@ -52,17 +54,18 @@ public class TransformRaw {
 		 * 
 		 * Mas info:
 		 * BOW: Bag Of Words
+		 * Tf-idf: Term frequency – Inverse document frequency
 		 */
 		
 		//  dataBOW_NonSparse.arff
 		visualTracking=pvisualTracking;
 		File nonSparseArff = null;
-		if(!visualTracking.equals("non") && (!visualTracking.equals("sparse"))){
+		if(!visualTracking.equals("non") && (!visualTracking.equals("sparse"))){ //parametroa txar
 			System.out.println("bad text input: please fefine sparse or nonsparse");
 			return null;
 		}
 		try {
-			nonSparseArff=toNonSparse(inputArff,model);
+			toNonSparse(inputArff,model);
 		} catch (Exception e) {
 			System.out.println("error: TransformRaw.transformRaw.toSparse");
 		}
@@ -75,7 +78,7 @@ public class TransformRaw {
 		//  dataBOW_Sparse.arff
 		File sparseArff = null;
 		try {
-			sparseArff=nonSparseToS(nonSparseArff);
+			nonSparseToS(nonSparseArff);
 		} catch (Exception e) {
 			System.out.println("error: TransformRaw.transformRaw.NonSparseToS");
 		}
@@ -89,18 +92,23 @@ public class TransformRaw {
 	}
 
 	
-	private static File toNonSparse(File originalArff, String model) {
+	private static void toNonSparse(File originalArff, String model) {
 		/* Lehen sortutako arff fitxategiaren textuak hitzetan banatzen du
-		 * in:  originalArff
-		 * out: words.arff in parent folder
-		 * 	  return wordsArff
+		 * in:  
+		 *    file1: originalArff
+		 *    String1: model(BOW  TF-IDF)
+		 * out: 
+		 * 	  file1: train_dictionary.txt
+		 *    file2: trainBOW
 		 */
+		
+		//hasierako balioa derrigorrezkoa da
 		boolean TFTransform = false;
 		boolean IDFTransform= false;
-		if(model.equals("BOW")) {
+		if(model.equals("BOW")) { //BOW denean parametroak falsen
 			TFTransform = false;
 			IDFTransform= false;
-		}else if(model.equals("TF-IDF")) {
+		}else if(model.equals("TF-IDF")) { //TF-IDF denean parametroak truen
 			TFTransform = true;
 			IDFTransform= true;
 		}else {
@@ -146,16 +154,17 @@ public class TransformRaw {
 		System.out.println("diccionary generated:  "+newDiccionaryName);
 		AppUtils.ordenagailuanGorde(nonSparseData, NonSparse);
 		emaitza[0] = dicc;
-		return NonSparse;
+		emaitza[1] = NonSparse;
 	}
 	
 
 
-	private static File nonSparseToS(File bowNonSparse) {
+	private static void nonSparseToS(File bowNonSparse) {
 		/*
-		 *Aurrebaldintzak: NonSparse fitxategi bat, arff formatuan.
-		 *Postbaldintzak: Sparse fitxategi bat sortuko du, arff formatuan.
-		 * newArff: NonSparse fitxategia
+		 *in: 
+		 *    file1: NonSparse fitxategi bat, arff formatuan.
+		 *out: 
+		 *    file1: Sparse fitxategi bat, arff formatuan.
 		 */
 		//datuak Instantzian gorde
 		Instances data=null;
@@ -179,10 +188,10 @@ public class TransformRaw {
 		
 		//sparse formatuan fitxategia konputagailuan gorde
 		String name = bowNonSparse.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
-		String newFileName = procesedFilesPath+File.separator+name+".arff"; //Sortuko dugun CSV berriaren izena definitu
+		String newFileName = procesedFilesPath+File.separator+name+".arff"; //Sortuko dugun ARFF berriaren izena definitu
 		File bowSparse = new File(newFileName);
 		AppUtils.ordenagailuanGorde(dataFiltered, bowSparse);
-		return bowSparse;
+		emaitza[1] = bowSparse;
 	}
 	
 

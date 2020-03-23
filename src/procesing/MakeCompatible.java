@@ -3,15 +3,11 @@ package procesing;
 import util.AppUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 import weka.core.Instances;
-import weka.core.converters.ArffSaver;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Add;
 import weka.filters.unsupervised.attribute.FixedDictionaryStringToWordVector;
-import weka.filters.unsupervised.attribute.Remove;
 
 public class MakeCompatible {
 	private static String procesedFilesPath;
@@ -48,7 +44,6 @@ public class MakeCompatible {
 		String newFileName = procesedFilesPath+File.separator+name+"COMP.arff";
 
 		Instances dataTs = null;
-
 		try {
 			DataSource sourceTs = new DataSource(test.getAbsolutePath());
 			dataTs = sourceTs.getDataSet();
