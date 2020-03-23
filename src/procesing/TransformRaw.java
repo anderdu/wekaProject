@@ -11,6 +11,7 @@ import util.AppUtils;
 
 import java.io.File;
 
+import weka.core.DictionaryBuilder;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
@@ -20,6 +21,7 @@ import weka.filters.unsupervised.instance.SparseToNonSparse;
 public class TransformRaw {
 	private static String procesedFilesPath;
 	private static String visualTracking;
+	private static File[] emaitza = null;
 	//private static String model;
 
 
@@ -33,7 +35,7 @@ public class TransformRaw {
 		}
 	}
 	
-	public static File transformRaw(File inputArff, String pvisualTracking, String model) {
+	public static File[] transformRaw(File inputArff, String pvisualTracking, String model) {
 		/*
 		 * Aurrebaldintzak: arff-aren datuak ez dira nominalak izango, stringToNominal filtroarekin ragazita daude
 		 * in: arff fitxategia String esaldiekin eta clasearekin
@@ -65,7 +67,10 @@ public class TransformRaw {
 			System.out.println("error: TransformRaw.transformRaw.toSparse");
 		}
 		System.out.println("TransformRaw --> nonsparse done");
-		if(visualTracking.equals("non")) return nonSparseArff;
+		if(visualTracking.equals("non")) {
+			emaitza[1] = nonSparseArff;
+			return emaitza;
+		}
 		
 		//  dataBOW_Sparse.arff
 		File sparseArff = null;
@@ -75,7 +80,10 @@ public class TransformRaw {
 			System.out.println("error: TransformRaw.transformRaw.NonSparseToS");
 		}
 		System.out.println("TransformRaw --> sparse done");
-		if(visualTracking.equals("sparse")) return sparseArff;
+		if(visualTracking.equals("sparse")) {
+			emaitza[1] = sparseArff;
+			return emaitza;
+		}
 		System.out.println("errore ezezaguna");
 		return null;
 	}
@@ -114,27 +122,31 @@ public class TransformRaw {
 		}
 		//filtroa aplikatu - String-ak hitzetan banantzeko
 		Instances nonSparseData=null;
+		String name = originalArff.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
+		String newDiccionaryName = procesedFilesPath+File.separator+name+"_dictionary.txt"; //Sortuko dugun CSV berriaren izena definitu
+		File dicc = new File(newDiccionaryName);
 		try {
 			StringToWordVector filter = new StringToWordVector();
 			filter.setWordsToKeep(1000000);
 			filter.setMinTermFreq(3);
-			filter.setTFTransform(false); //TFTransform
-			filter.setIDFTransform(false); //IDFTransform
+			filter.setTFTransform(TFTransform);
+			filter.setIDFTransform(IDFTransform);
 			filter.setAttributeIndices("first-last");
 			filter.setInputFormat(data);
+			filter.setDictionaryFileToSaveTo(dicc);
+			filter.setPeriodicPruning(100.0);
 			nonSparseData = Filter.useFilter(data, filter);
-			System.out.println(nonSparseData.numAttributes());
 		} catch (Exception e) {
 			System.out.println("TransformRaw.toSparse --> filter error");
 		}
 		
 		//Fitxategia sortu --> nameBOW.arff
-		String name = originalArff.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
-		String newFileName = procesedFilesPath+File.separator+name+"BOW.arff"; //Sortuko dugun CSV berriaren izena definitu
-		File bowArff = new File(newFileName);
-		//newArff.getAbsolutePath()
-		AppUtils.ordenagailuanGorde(nonSparseData, bowArff);
-		return bowArff;
+		String newBOWFileName = procesedFilesPath+File.separator+name+"BOW.arff"; //Sortuko dugun CSV berriaren izena definitu
+		File NonSparse = new File(newBOWFileName);
+		System.out.println("diccionary generated:  "+newDiccionaryName);
+		AppUtils.ordenagailuanGorde(nonSparseData, NonSparse);
+		emaitza[0] = dicc;
+		return NonSparse;
 	}
 	
 
@@ -168,9 +180,9 @@ public class TransformRaw {
 		//sparse formatuan fitxategia konputagailuan gorde
 		String name = bowNonSparse.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
 		String newFileName = procesedFilesPath+File.separator+name+".arff"; //Sortuko dugun CSV berriaren izena definitu
-		File bowArff = new File(newFileName);
-		AppUtils.ordenagailuanGorde(dataFiltered, bowArff);
-		return bowArff;
+		File bowSparse = new File(newFileName);
+		AppUtils.ordenagailuanGorde(dataFiltered, bowSparse);
+		return bowSparse;
 	}
 	
 

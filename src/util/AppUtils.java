@@ -53,6 +53,7 @@ public class AppUtils {
 		} catch (Exception e) {
 			System.out.println("ordenagailuanGorde error");
 		}
+		System.out.println("File saved:  "+fitx);
 	}
 	
 	public static void disableWarning() {
