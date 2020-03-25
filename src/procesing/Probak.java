@@ -11,14 +11,18 @@ public class Probak {
 	public static void main(String[] args) throws Exception {
 		AppUtils.disableWarning();
 		String trainCSV="C:\\Users\\andur\\Programas\\wekaData\\Proiektua_text_mining\\train.csv";
-		String testCSV="C:\\Users\\andur\\Programas\\wekaData\\Proiektua_text_mining\\test.csv";
+		File devARRF;
 		// 1. raw datuak dituen fitxategia aurreprosezatu konpatibilitate arazoak ekiditzeko
 		File trainARFF = GetRaw.getRaw(trainCSV);
+		// 1.2 traini splip egin eta train eta dev-en banandu
+		File[] splited = DataSplit.split(trainARFF, 30); //f0->train f1->test
+		trainARFF = splited[0];
+		devARRF = splited[1];
 		// 2. StringToWord filtroa aplikatu fitxategiaren textuak hitzetan banantzeko
-		File[] DiccandtrainBOW = TransformRaw.transformRaw(trainARFF,"non","BOW"); //sparse non    BOW  TF-IDF
+		File[] DiccANDtrainBOW = TransformRaw.transformRaw(trainARFF,"non","BOW"); //sparse non    BOW  TF-IDF
 		//berdina test-ekin
-		File testARRF = GetRaw.getRaw(testCSV);
-		MakeCompatible.makeCompatible(DiccandtrainBOW[1], testARRF, DiccandtrainBOW[0]);
+		
+		MakeCompatible.makeCompatible(DiccANDtrainBOW[1], devARRF, DiccANDtrainBOW[0]);
 		
 		System.out.println("END data proccessing test");
 

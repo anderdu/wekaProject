@@ -25,7 +25,7 @@ public class MakeCompatible {
 		}
 	}
 
-	public static void makeCompatible(File trainBOW, File test, File dictionary) throws Exception {
+	public static File makeCompatible(File trainBOW, File test, File dictionary) throws Exception {
 		/*
 		 * Bi liburutegien konpatibilitatea bermatzeko atributuen posizioak berdindu
 		 * in: 
@@ -42,6 +42,7 @@ public class MakeCompatible {
 		else procesedFilesPath = trainBOW.getParent()+File.separator+"procesedFiles";
 		String name = test.getName().split(File.separator+".")[0];
 		String newFileName = procesedFilesPath+File.separator+name+"COMP.arff";
+		File devCompatible = new File(newFileName);
 
 		Instances dataTs = null;
 		try {
@@ -56,6 +57,7 @@ public class MakeCompatible {
 		fixedDictionary.setDictionaryFile(dictionary);
 		fixedDictionary.setInputFormat(dataTs);
 		dataTs = Filter.useFilter(dataTs, fixedDictionary);
-		AppUtils.ordenagailuanGorde(dataTs,new File(newFileName));
+		AppUtils.ordenagailuanGorde(dataTs,devCompatible);
+		return devCompatible;
 	}
 }

@@ -2,12 +2,19 @@ package util;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffSaver;
+import weka.core.converters.ConverterUtils.DataSource;
 
 public class AppUtils {
+	public static void main(String[] args) {
+		//ArrayList<Integer> aux = sequence("1:2:9");
+		
+	}
+	
 	public static String getFileExtensionn(File file) {
         String fileName = file.getName();
         if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
@@ -30,7 +37,7 @@ public class AppUtils {
 		}
 	}
 	
-	public static void ordenagailuanGorde(Instances data,File fitx) {
+	public static File ordenagailuanGorde(Instances data,File fitx) {
 		try {
 			//filewriter prestatu
 			FileWriter writer = new FileWriter(fitx);
@@ -54,6 +61,7 @@ public class AppUtils {
 			System.out.println("ordenagailuanGorde error");
 		}
 		System.out.println("File saved:  "+fitx);
+		return fitx;
 	}
 	
 	public static void disableWarning() {
@@ -73,6 +81,36 @@ public class AppUtils {
 			}
 		}
 		return minIndex;
+	}
+	
+	public static ArrayList<Integer> sequence(String seq){
+		//ej: 1:10:2
+		ArrayList<Integer> emaitza = new ArrayList<Integer>();
+		String[] data = seq.split(":.");
+		for (String num : data) {
+			emaitza.add(Integer.parseInt(num));
+		}
+		return emaitza;
+	}
+	
+	public static Instances file2instances(String file,String classIndex) throws Exception {
+		Instances data = null;
+		DataSource source = new DataSource(file);
+		data = source.getDataSet();
+		if(classIndex.equals("last")) {
+			data.setClassIndex(data.numAttributes()-1);
+		}else {
+			data.setClassIndex(Integer.parseInt(classIndex));
+		}
+		return data;
+	}
+	
+	public static Double getMean(ArrayList<Double> in) {
+		Double total = 0.0;
+		for (Double val : in) {
+			total = total+val;
+		}
+		return total/in.size();
 	}
 	
 }

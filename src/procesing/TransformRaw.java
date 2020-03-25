@@ -20,7 +20,7 @@ import weka.filters.unsupervised.instance.SparseToNonSparse;
 public class TransformRaw {
 	private static String procesedFilesPath;
 	private static String visualTracking;
-	private static File[] emaitza = null;
+	private static File[] emaitza = new File[2];
 	//private static String model;
 
 
@@ -66,27 +66,20 @@ public class TransformRaw {
 		}
 		try {
 			toNonSparse(inputArff,model);
+			System.out.println("TransformRaw --> nonsparse done");
 		} catch (Exception e) {
 			System.out.println("error: TransformRaw.transformRaw.toSparse");
 		}
-		System.out.println("TransformRaw --> nonsparse done");
-		if(visualTracking.equals("non")) {
-			emaitza[1] = nonSparseArff;
-			return emaitza;
-		}
+		if(visualTracking.equals("non")) return emaitza;
 		
 		//  dataBOW_Sparse.arff
-		File sparseArff = null;
 		try {
 			nonSparseToS(nonSparseArff);
 		} catch (Exception e) {
 			System.out.println("error: TransformRaw.transformRaw.NonSparseToS");
+			System.out.println("TransformRaw --> sparse done");
 		}
-		System.out.println("TransformRaw --> sparse done");
-		if(visualTracking.equals("sparse")) {
-			emaitza[1] = sparseArff;
-			return emaitza;
-		}
+		if(visualTracking.equals("sparse")) return emaitza;
 		System.out.println("errore ezezaguna");
 		return null;
 	}
