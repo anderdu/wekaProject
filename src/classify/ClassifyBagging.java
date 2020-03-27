@@ -1,40 +1,72 @@
 package classify;
 
 import java.io.File;
+import java.util.ArrayList;
 
-import util.AppUtils;
-import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.evaluation.Evaluation;
+import params.BaggingParams;
 import weka.classifiers.meta.Bagging;
-import weka.core.Instances;
-import weka.core.converters.ConverterUtils.DataSource;
+import weka.classifiers.trees.J48;
 
 public class ClassifyBagging {
 	
 	
-	public static void classify(File train, File test,File parameters) throws Exception {
+	public static void parametroEkorketa(File parameters,File train) throws Exception {
 		
-		Instances dataTr = null;
-		Instances dataTs = null;
-		try {
-			DataSource sourceTr = new DataSource(train.getAbsolutePath());
-			dataTr = sourceTr.getDataSet();
-			dataTr.setClassIndex(0);
+		// parametroen balioak sartzeko araylistak
+		ArrayList<Integer> bagSizePercent = new ArrayList<Integer>();
+		ArrayList<String> batchSize = new ArrayList<String>();
+		ArrayList<Boolean> calcOutOfBag = new ArrayList<Boolean>();
+		ArrayList<Boolean> debug = new ArrayList<Boolean>();
+		ArrayList<Boolean> doNotCheckCapabilities = new ArrayList<Boolean>();
+		ArrayList<Integer> numDecimalPlaces = new ArrayList<Integer>();
+		ArrayList<Integer> numExecutionSlots = new ArrayList<Integer>();
+		ArrayList<Integer> numIterations = new ArrayList<Integer>();
+		
+		// arraylist-ak bete
+	
+		//klasifikadorea sortu 
+		Bagging bag = new Bagging();
+		J48 j = new J48();
+		bag.setClassifier(j);
+		
+		//parametro ekorketa
+		for (Integer bagS : bagSizePercent) {
+			for (String batS : batchSize) {
+				for (Boolean calOB : calcOutOfBag) {
+					for (Boolean deb : debug) {
+						for (Boolean doNCap : doNotCheckCapabilities) {
+							for (Integer numDec : numDecimalPlaces) {
+								for (Integer numEx : numExecutionSlots) {
+									for (Integer numIt : numIterations) {
+										bag.setBagSizePercent(bagS);
+										bag.setBatchSize(batS);
+										bag.setCalcOutOfBag(calOB);
+										bag.setDebug(deb);
+										bag.setDoNotCheckCapabilities(doNCap);
+										bag.setNumDecimalPlaces(numDec);
+										bag.setNumExecutionSlots(numEx);
+										bag.setNumIterations(numIt);
+										Double holdOutValue = Evaluators.holOut(train, bag, 5, 70);
+										Double kFOldValue = Evaluators.kFold(train, bag, 10);
+										Double rebValue = Evaluators.resubstitution(train, bag);
+										BaggingParams val = new BaggingParams("j48", bagS, batS, calOB, deb, doNCap, numDec, 
+												numEx, numIt, holdOutValue, kFOldValue, rebValue);
+
+									}
+								}
+								
+							}
+							
+						}
+						
+					}
+					
+				}
+				
+			}
 			
-			DataSource sourceTs = new DataSource(test.getAbsolutePath());
-			dataTs = sourceTs.getDataSet();
-			dataTs.setClassIndex(0);
-		} catch (Exception e) {
-			System.out.println("error geting data");
 		}
 		
-		int minIndex = AppUtils.minIndex(dataTr);
-		
-		//klasifikadorea definitu
-		Bagging classificador = new Bagging();
-		//evaluadorea definitu
-		Evaluation eval = new Evaluation(dataTs);
-		//probak egiteko parametroak prestatu
 		
 	}
 

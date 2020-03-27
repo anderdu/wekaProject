@@ -10,8 +10,6 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.FixedDictionaryStringToWordVector;
 
 public class MakeCompatible {
-	private static String procesedFilesPath;
-
 	public static void main(String[] args) {
 		//C:\\Users\\andur\\Programas\\wekaData\\Proiektua_text_mining\\procesedFiles\\trainBOW.arff
 		AppUtils.disableWarning();
@@ -19,13 +17,13 @@ public class MakeCompatible {
 			File trainBOW = new File(args[0]);
 			File test = new File(args[1]);
 			File dictionary = new File(args[2]);
-			makeCompatible(trainBOW, test, dictionary);
+			makeCompatible(test, dictionary);
 		} catch (Exception e) {
 			System.out.println("");
 		}
 	}
 
-	public static File makeCompatible(File trainBOW, File test, File dictionary) throws Exception {
+	public static File makeCompatible(File test, File dictionary){
 		/*
 		 * Bi liburutegien konpatibilitatea bermatzeko atributuen posizioak berdindu
 		 * in: 
@@ -38,10 +36,8 @@ public class MakeCompatible {
 		 * PROIEKTU
 		 * raw2TFIDF.jar trainBow.arff testBOW.arff
 		 */
-		if(trainBOW.getParentFile().getName().equals("procesedFiles")) procesedFilesPath = trainBOW.getParent();
-		else procesedFilesPath = trainBOW.getParent()+File.separator+"procesedFiles";
 		String name = test.getName().split(File.separator+".")[0];
-		String newFileName = procesedFilesPath+File.separator+name+"COMP.arff";
+		String newFileName = dictionary.getParent()+File.separator+name+"COMP.arff";
 		File devCompatible = new File(newFileName);
 
 		Instances dataTs = null;
@@ -53,10 +49,15 @@ public class MakeCompatible {
 		}
 		
 		// Fixed aplikatu test-ari train-aren berdina izateko
-		FixedDictionaryStringToWordVector fixedDictionary = new FixedDictionaryStringToWordVector();
-		fixedDictionary.setDictionaryFile(dictionary);
-		fixedDictionary.setInputFormat(dataTs);
-		dataTs = Filter.useFilter(dataTs, fixedDictionary);
+		try {
+			FixedDictionaryStringToWordVector fixedDictionary = new FixedDictionaryStringToWordVector();
+			fixedDictionary.setDictionaryFile(dictionary);
+			fixedDictionary.setInputFormat(dataTs);
+			dataTs = Filter.useFilter(dataTs, fixedDictionary);
+		} catch (Exception e) {
+			System.out.println("error: MakeCompatible  fixed diccionary ");
+		}
+
 		AppUtils.ordenagailuanGorde(dataTs,devCompatible);
 		return devCompatible;
 	}

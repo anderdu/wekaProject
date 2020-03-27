@@ -82,7 +82,7 @@ public class GetRaw {
 			File parent = new File(procesedFilesPath);
 			if(!parent.isDirectory()) parent.mkdir(); //direktorio ez bada existitzen, horain sortuko du
 			String name = origFile.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
-			String newFileName = procesedFilesPath+File.separator+name+".csv"; //Sortuko dugun CSV berriaren izena definitu
+			String newFileName = procesedFilesPath+File.separator+name+"Full.csv"; //Sortuko dugun CSV berriaren izena definitu
 			parsedCSV = new File(newFileName);
 			parsedCSV.createNewFile(); //Fisikoki sortu
 			

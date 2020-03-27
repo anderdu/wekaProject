@@ -27,12 +27,12 @@ public class Evaluators {
 		 *    klase minoritarioren fmeasure
 		 */
 		
-		String pvisualTracking = "nonsparse";
+		String pvisualTracking = "non";
 		String model = "BOW";
 		
 		File[] results = new File[2];
 		results = TransformRaw.transformRaw(train, pvisualTracking, model);
-		File trainBOW = results[0];
+		File trainBOW = results[1];
 		
 		Instances data = null;
 		DataSource source = new DataSource(trainBOW.getAbsolutePath());
@@ -53,21 +53,22 @@ public class Evaluators {
 		
 		for (int i = 0; i < iterations; i++) {
 			
-			String pvisualTracking = "nonsparse";
+			String pvisualTracking = "non";
 			String model = "BOW";
 			
+
 			Instances data = AppUtils.file2instances(fTrain.getAbsolutePath(), "0");//arff fitxategi baten instantziak lortzen ditu 
 			
 			Instances[] trainANDtest= datuakZatitu(data,percentage);//datu partiketa metodo baten konprimituta
 			
-			File fileTrain = AppUtils.ordenagailuanGorde(trainANDtest[0],new File(fTrain.getParent()+File.separatorChar+"trainBOW.arff"));
-			File fileDev = AppUtils.ordenagailuanGorde(trainANDtest[1],new File(fTrain.getParent()+File.separatorChar+"devBOW.arff"));
+			File fileTrain = AppUtils.ordenagailuanGorde(trainANDtest[0],new File(fTrain.getParent()+File.separatorChar+"train.arff"));
+			File fileDev = AppUtils.ordenagailuanGorde(trainANDtest[1],new File(fTrain.getParent()+File.separatorChar+"dev.arff"));
 			
 			File[] results = new File[2];
 			results = TransformRaw.transformRaw(fileTrain, pvisualTracking, model);
-			File fileTrainBOW = results[0];
-			File dictionary = results[1];
-			File fileDevCOMP = MakeCompatible.makeCompatible(fileTrainBOW, fileDev, dictionary);
+			File dictionary = results[0];
+			File fileTrainBOW = results[1];
+			File fileDevCOMP = MakeCompatible.makeCompatible(fileDev, dictionary);
 			
 			Instances trainBOW = AppUtils.file2instances(fileTrainBOW.getAbsolutePath(), "0");
 			Instances DevCOMP = AppUtils.file2instances(fileDevCOMP.getAbsolutePath(), "0");
@@ -83,11 +84,11 @@ public class Evaluators {
 		
 	}
 	public static Double resubstitution(File train,Classifier classificador) throws Exception {
-		String pvisualTracking = "nonsparse";
+		String pvisualTracking = "non";
 		String model = "BOW";
 		File[] results = new File[2];
 		results = TransformRaw.transformRaw(train, pvisualTracking, model);
-		File fileTrainBOW = results[0];
+		File fileTrainBOW = results[1];
 		
 		Instances trainBOW = AppUtils.file2instances(fileTrainBOW.getAbsolutePath(), "0");
 

@@ -11,58 +11,28 @@ import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
 public class ClassifyNaiveBayes {
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) throws Exception {
+		//C:\Users\andur\Programas\wekaData\Proiektua_text_mining\procesedFiles\train.arff
 		AppUtils.disableWarning();
-		try {
-			File parameters = null;
-			File train = new File(args[1]);
-			Integer partitions = Integer.parseInt(args[2]);
-			String evalMode = args[3];
-			Integer percentage = Integer.parseInt(args[4]);
-			classify(parameters,train,partitions,evalMode,percentage);
-		} catch (Exception e) {
-			System.out.println("NaiveBayes error");
-		}
+			//File train = new File(args[0]);
+			File train = new File("C:\\Users\\andur\\Programas\\wekaData\\Proiektua_text_mining\\procesedFiles\\trainFull.arff");
+			
+			classify(train);
 	}
 
-	public static void classify(File parameters, File train, Integer partitions , String evalMode, Integer percentage) throws Exception {
+	public static void classify(File train) throws Exception {
 		
-		//get data
-		Instances data = null;
-		try {
-			if(evalMode.equals("kfold")) {
-				Evaluators.kFold(train,partitions);
-			}else if(evalMode.equals("holOut")) {
-				
-			}else if(evalMode.equals("reb")) {
-				
-			}
-		} catch (Exception e) {
-			System.out.println("error geting data");
-		}
+		Integer iterations = 5;
+		Integer percentage = 70;
+		Integer partitions = 10;
 		
 		//klasifikadorea definitu
-		Classifier prueba = new NaiveBayes();
 		NaiveBayes classificador = new NaiveBayes();
-		//evaluadorea definitu
-		Evaluation eval = new Evaluation(data);
-		
-		//probak aplikatu
-		classificador.buildClassifier(data);
-		if(test=="kfold") {
-			eval.crossValidateModel(classificador, dataTr, 10, new Random(1));
-		}
-		else {
-			eval.evaluateModel(classificador, dataTs);
-		}
-		System.out.println(eval.toSummaryString("=== Summary ===", false));
-		System.out.println(eval.toClassDetailsString());
-		System.out.println(eval.toMatrixString());		
-	}
-
-	public static void classify(File train, File parameters) {
-		// TODO Auto-generated method stub
-		
+		Double holOutVal = Evaluators.holOut(train, classificador, iterations, percentage);
+		Double kFoldVal = Evaluators.kFold(train, classificador, partitions);
+		Double resubstitutionVal = Evaluators.resubstitution(train, classificador);
+		System.out.println(holOutVal);
+		System.out.println(kFoldVal);
+		System.out.println(resubstitutionVal);
 	}
 }

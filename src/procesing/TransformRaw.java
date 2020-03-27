@@ -61,14 +61,14 @@ public class TransformRaw {
 		visualTracking=pvisualTracking;
 		File nonSparseArff = null;
 		if(!visualTracking.equals("non") && (!visualTracking.equals("sparse"))){ //parametroa txar
-			System.out.println("bad text input: please fefine sparse or nonsparse");
+			System.out.println("error:  TransformRaw   bad text input: please fefine sparse or nonsparse");
 			return null;
 		}
 		try {
 			toNonSparse(inputArff,model);
 			System.out.println("TransformRaw --> nonsparse done");
 		} catch (Exception e) {
-			System.out.println("error: TransformRaw.transformRaw.toSparse");
+			System.out.println("TransformRaw.transformRaw.toSparse");
 		}
 		if(visualTracking.equals("non")) return emaitza;
 		
@@ -80,7 +80,7 @@ public class TransformRaw {
 			System.out.println("TransformRaw --> sparse done");
 		}
 		if(visualTracking.equals("sparse")) return emaitza;
-		System.out.println("errore ezezaguna");
+		System.out.println("TransformRaw  errore ezezaguna");
 		return null;
 	}
 
@@ -105,7 +105,7 @@ public class TransformRaw {
 			TFTransform = true;
 			IDFTransform= true;
 		}else {
-			System.out.println("ez da modeloa ondo definitu");
+			System.out.println("TransformRaw   ez da modeloa ondo definitu");
 			System.exit(0);
 		}
 		

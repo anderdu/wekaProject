@@ -12,6 +12,10 @@ import weka.core.converters.ConverterUtils.DataSource;
 public class AppUtils {
 	public static void main(String[] args) {
 		//ArrayList<Integer> aux = sequence("1:2:9");
+		String whatever0 = "firstname"+"\t"+"\t"+"lastname";
+		 String whatever1 = "firstname"+"\t"+"\t"+"\t"+"lastname";
+		 System.out.println(whatever0);
+		 System.out.println(whatever1);
 		
 	}
 	
@@ -73,7 +77,8 @@ public class AppUtils {
 		int[] count = data.attributeStats(data.classIndex()).nominalCounts;
 		int minValue = count[0];
 		int minIndex = 0;
-		for (int i = 0; i < data.numAttributes()-3; i++) {
+		int numAtributes = count.length;
+		for (int i = 0; i < numAtributes; i++) {
 			int val = count[i];
 			if(val<minValue && val!=0) {
 				minValue = val;
