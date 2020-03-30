@@ -36,7 +36,7 @@ public class MakeCompatible {
 		 * PROIEKTU
 		 * raw2TFIDF.jar trainBow.arff testBOW.arff
 		 */
-		String name = test.getName().split(File.separator+".")[0];
+		String name = test.getName().split("\\.")[0];
 		String newFileName = dictionary.getParent()+File.separator+name+"COMP.arff";
 		File devCompatible = new File(newFileName);
 

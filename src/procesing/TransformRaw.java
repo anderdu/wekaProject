@@ -120,7 +120,7 @@ public class TransformRaw {
 		}
 		//filtroa aplikatu - String-ak hitzetan banantzeko
 		Instances nonSparseData=null;
-		String name = originalArff.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
+		String name = originalArff.getName().split("\\.")[0]; //fitxeroaren izena lortzen du, parent barruan
 		String newDiccionaryName = originalArff.getParent()+File.separator+name+"_dictionary.txt"; //Sortuko dugun CSV berriaren izena definitu
 		File dicc = new File(newDiccionaryName);
 		try {
@@ -177,7 +177,7 @@ public class TransformRaw {
 		}
 		
 		//sparse formatuan fitxategia konputagailuan gorde
-		String name = bowNonSparse.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
+		String name = bowNonSparse.getName().split("\\.")[0]; //fitxeroaren izena lortzen du, parent barruan
 		String newFileName = bowNonSparse.getParent()+File.separator+name+".arff"; //Sortuko dugun ARFF berriaren izena definitu
 		File bowSparse = new File(newFileName);
 		AppUtils.ordenagailuanGorde(dataFiltered, bowSparse);
