@@ -11,7 +11,15 @@ import weka.filters.unsupervised.instance.RemovePercentage;
 
 public class DataSplit {
 	public static void main(String[] args) {
-		
+		AppUtils.disableWarning();
+		try {
+			if(args.length!=2) System.out.println("incorrect num arguments");
+			int percentage = Integer.parseInt(args[1]);
+			File dataFile= new File(args[0]);
+			split(dataFile,percentage);
+		} catch (Exception e) {
+			System.out.println("error: DataSplit");
+		}
 	}
 	
 	public static File[] split(File dataFile,int percent) throws Exception {

@@ -17,7 +17,7 @@ import weka.filters.unsupervised.instance.RemovePercentage;
 
 public class Evaluators {
 	
-	public static Double kFold(File train,Classifier classificador, Integer partitions) throws Exception {
+	public static Double kFold(File train,Classifier classificador, Integer partitions,String pvisualTracking,String model) throws Exception {
 		/*
 		 * in: 
 		 *    train.arff
@@ -26,9 +26,6 @@ public class Evaluators {
 		 * out:
 		 *    klase minoritarioren fmeasure
 		 */
-		
-		String pvisualTracking = "non";
-		String model = "BOW";
 		
 		File[] results = new File[2];
 		results = TransformRaw.transformRaw(train, pvisualTracking, model);
@@ -44,19 +41,20 @@ public class Evaluators {
 		Evaluation eval = new Evaluation(data);
 		classificador.buildClassifier(data);
 		
+		System.out.println("Datu gehigarriak");
 		eval.crossValidateModel(classificador, data, partitions, new Random(1));
+		System.out.println(eval.toSummaryString("\nResults\n======\n", false));
+		System.out.println(eval.toClassDetailsString());
+		System.out.println(eval.toMatrixString());
+		
 		
 		return eval.fMeasure(minIndex);
 	}
-	public static Double holOut(File fTrain,Classifier classificador, Integer iterations, Integer percentage) throws Exception {
+	public static Double holOut(File fTrain,Classifier classificador, Integer iterations, Integer percentage, String pvisualTracking, String model) throws Exception {
 		ArrayList<Double> fMeasureValues = new ArrayList<Double>();
 		
 		for (int i = 0; i < iterations; i++) {
 			
-			String pvisualTracking = "non";
-			String model = "BOW";
-			
-
 			Instances data = AppUtils.file2instances(fTrain.getAbsolutePath(), "0");//arff fitxategi baten instantziak lortzen ditu 
 			
 			Instances[] trainANDtest= datuakZatitu(data,percentage);//datu partiketa metodo baten konprimituta
@@ -83,9 +81,7 @@ public class Evaluators {
 		return AppUtils.getMean(fMeasureValues);
 		
 	}
-	public static Double resubstitution(File train,Classifier classificador) throws Exception {
-		String pvisualTracking = "non";
-		String model = "BOW";
+	public static Double resubstitution(File train,Classifier classificador,String pvisualTracking,String model) throws Exception {
 		File[] results = new File[2];
 		results = TransformRaw.transformRaw(train, pvisualTracking, model);
 		File fileTrainBOW = results[1];

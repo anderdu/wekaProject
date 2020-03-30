@@ -19,28 +19,12 @@ public class AppUtils {
 		
 	}
 	
-	public static String getFileExtensionn(File file) {
-        String fileName = file.getName();
-        if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
-        return fileName.substring(fileName.lastIndexOf(".")+1);
-        else return "";
-	}
 	public static String getFileExtension(File file) {
 		if(file.getName().split("[.]").length>1) return file.getName().split("[.]")[1];
 		else return "0";
 	}
 	
-	public static void ordenagailuanGordeee(Instances data,File fitx) {
-		try {
-		    ArffSaver saver = new ArffSaver();
-		    saver.setInstances(data);
-		    saver.setFile(fitx);
-		    saver.writeBatch();
-	    }catch (Exception e) {
-	    	System.out.println("ordenagailuanGorde error");
-		}
-	}
-	
+
 	public static File ordenagailuanGorde(Instances data,File fitx) {
 		try {
 			//filewriter prestatu
@@ -117,5 +101,4 @@ public class AppUtils {
 		}
 		return total/in.size();
 	}
-	
 }

@@ -18,7 +18,6 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 import weka.filters.unsupervised.instance.SparseToNonSparse;
 
 public class TransformRaw {
-	private static String procesedFilesPath;
 	private static String visualTracking;
 	private static File[] emaitza = new File[2];
 	//private static String model;
@@ -74,7 +73,7 @@ public class TransformRaw {
 		
 		//  dataBOW_Sparse.arff
 		try {
-			nonSparseToS(nonSparseArff);
+			nonSparseToS(emaitza[1]);
 		} catch (Exception e) {
 			System.out.println("error: TransformRaw.transformRaw.NonSparseToS");
 			System.out.println("TransformRaw --> sparse done");
@@ -109,8 +108,6 @@ public class TransformRaw {
 			System.exit(0);
 		}
 		
-		if(originalArff.getParentFile().getName().equals("procesedFiles")) procesedFilesPath = originalArff.getParent();
-		else procesedFilesPath = originalArff.getParent()+File.separator+"procesedFiles";
 		//arff-a kargatu
 		Instances data=null;
 		try {
@@ -124,7 +121,7 @@ public class TransformRaw {
 		//filtroa aplikatu - String-ak hitzetan banantzeko
 		Instances nonSparseData=null;
 		String name = originalArff.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
-		String newDiccionaryName = procesedFilesPath+File.separator+name+"_dictionary.txt"; //Sortuko dugun CSV berriaren izena definitu
+		String newDiccionaryName = originalArff.getParent()+File.separator+name+"_dictionary.txt"; //Sortuko dugun CSV berriaren izena definitu
 		File dicc = new File(newDiccionaryName);
 		try {
 			StringToWordVector filter = new StringToWordVector();
@@ -142,7 +139,7 @@ public class TransformRaw {
 		}
 		
 		//Fitxategia sortu --> nameBOW.arff
-		String newBOWFileName = procesedFilesPath+File.separator+name+"BOW.arff"; //Sortuko dugun CSV berriaren izena definitu
+		String newBOWFileName = originalArff.getParent()+File.separator+name+"BOW.arff"; //Sortuko dugun CSV berriaren izena definitu
 		File NonSparse = new File(newBOWFileName);
 		System.out.println("diccionary generated:  "+newDiccionaryName);
 		AppUtils.ordenagailuanGorde(nonSparseData, NonSparse);
@@ -181,7 +178,7 @@ public class TransformRaw {
 		
 		//sparse formatuan fitxategia konputagailuan gorde
 		String name = bowNonSparse.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
-		String newFileName = procesedFilesPath+File.separator+name+".arff"; //Sortuko dugun ARFF berriaren izena definitu
+		String newFileName = bowNonSparse.getParent()+File.separator+name+".arff"; //Sortuko dugun ARFF berriaren izena definitu
 		File bowSparse = new File(newFileName);
 		AppUtils.ordenagailuanGorde(dataFiltered, bowSparse);
 		emaitza[1] = bowSparse;
