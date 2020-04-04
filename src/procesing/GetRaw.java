@@ -81,7 +81,7 @@ public class GetRaw {
 		try {
 			File parent = new File(procesedFilesPath);
 			if(!parent.isDirectory()) parent.mkdir(); //direktorio ez bada existitzen, horain sortuko du
-			String name = origFile.getName().split("\\.")[0]; //fitxeroaren izena lortzen du, parent barruan
+			String name = origFile.getName().split(File.separator+".")[0]; //fitxeroaren izena lortzen du, parent barruan
 			String newFileName = procesedFilesPath+File.separator+name+"Full.csv"; //Sortuko dugun CSV berriaren izena definitu
 			parsedCSV = new File(newFileName);
 			parsedCSV.createNewFile(); //Fisikoki sortu
@@ -97,10 +97,10 @@ public class GetRaw {
 					line = csvReader.readLine();
 					if(line==null) break;
 				    line = line.replace("'", "`");
-				    line = line.replace("?", "\\?");
-				    if(n!=0) line = line.replace("label", "\\label");
-				    if(n!=0) line = line.replace("id", "\\id");
-				    if(n!=0) line = line.replace("text", "\\text");
+				    //line = line.replace("?", "\\?");
+				    if(n!=0) line = line.replace(" label ", " \\label ");
+				    if(n!=0) line = line.replace(" id ", " \\id ");
+				    if(n!=0) line = line.replace(" text ", " \\text ");
 				    writer.append(line+"\n");
 				    writer.flush();
 				    n++;

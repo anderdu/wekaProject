@@ -77,7 +77,7 @@ public class TransformRaw {
 		} catch (Exception e) {
 			System.out.println("error: TransformRaw.transformRaw.NonSparseToS");
 			System.out.println("TransformRaw --> sparse done");
-		}
+		} 
 		if(visualTracking.equals("sparse")) return emaitza;
 		System.out.println("TransformRaw  errore ezezaguna");
 		return null;
@@ -126,7 +126,7 @@ public class TransformRaw {
 		try {
 			StringToWordVector filter = new StringToWordVector();
 			filter.setWordsToKeep(1000000);
-			filter.setMinTermFreq(3);
+			filter.setMinTermFreq(0);
 			filter.setTFTransform(TFTransform);
 			filter.setIDFTransform(IDFTransform);
 			filter.setAttributeIndices("first-last");
