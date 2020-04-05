@@ -10,9 +10,10 @@ public class BaggingParams {
 	private Integer numIterations;
 	private Double holdOutValue;
 	private Integer seed;
+	private Double tpr;
 	
 	public BaggingParams(String classifier, Integer bagSizePercent, String batchSize, Integer numDecimalPlaces, Integer numExecutionSlots, Integer numIterations,
-			Double holdOutValue, Integer seed) {
+			Double holdOutValue,Double tpr, Integer seed) {
 		this.classifier = classifier;
 		this.bagSizePercent = bagSizePercent;
 		this.batchSize = batchSize;
@@ -20,6 +21,7 @@ public class BaggingParams {
 		this.numExecutionSlots = numExecutionSlots;
 		this.numIterations = numIterations;
 		this.holdOutValue = holdOutValue;
+		this.tpr = tpr;
 		this.seed = seed;
 	}
 	
@@ -30,11 +32,11 @@ public class BaggingParams {
 
 	public static String getHead() {
 	return "classifier"+"\t\t"+"bagSizePercent"+"\t"+"batchSize"+"\t"+"numDecPla"+"\t"+"numExSlot"+"\t"+"numIterations"+"\t"+"seed"+"\t"+
-			"\t"+"holdOutValue";
+			"\t"+"holdOutValue"+"\t\t\t"+"tpr";
 	}
 	
 	public String toString() {
-		return classifier+"\t\t"+bagSizePercent+"\t\t"+batchSize+"\t\t"+numDecimalPlaces+"\t\t"+numExecutionSlots+"\t\t"+numIterations+"\t\t"+seed+"\t\t"+
-		holdOutValue;
+		return classifier+"\t\t"+bagSizePercent+"\t\t\t"+batchSize+"\t\t\t"+numDecimalPlaces+"\t\t\t"+numExecutionSlots+"\t\t\t"+numIterations+"\t\t\t\t"+seed+"\t\t\t"+
+		holdOutValue+"\t\t\t\t\t"+tpr;
 	}
 }

@@ -14,10 +14,10 @@ public class FeatureSubSel {
 	public static void main(String[] args) throws Exception {
 		AppUtils.disableWarning();
 		File f = new File(args[0]);
-		File emaitza = apply(f,args[1]);
+		File emaitza = apply(f,args[1],300);
 	}
 	
-	public static Instances apply(Instances data) throws Exception {
+	public static Instances apply(Instances data,Integer num) throws Exception {
 		/*
 		 * in: instances 
 		 * out: instances with less atributes
@@ -26,7 +26,7 @@ public class FeatureSubSel {
 		AttributeSelection filter = new AttributeSelection();
 		InfoGainAttributeEval eval = new InfoGainAttributeEval();
 		Ranker search = new Ranker();
-		search.setNumToSelect(300);
+		search.setNumToSelect(num);
 		search.setThreshold(0.01);
 		
 		filter.setEvaluator(eval);
@@ -38,7 +38,7 @@ public class FeatureSubSel {
 		return emaitza;
 	}
 	
-	public static File apply(File file,String classIndex) throws Exception {
+	public static File apply(File file,String classIndex,Integer num) throws Exception {
 		/*
 		 * in: 
 		 *     arff file
@@ -54,7 +54,7 @@ public class FeatureSubSel {
 		AttributeSelection filter = new AttributeSelection();
 		InfoGainAttributeEval eval = new InfoGainAttributeEval();
 		Ranker search = new Ranker();
-		search.setNumToSelect(300);
+		search.setNumToSelect(num);
 		search.setThreshold(0.01);
 		
 		filter.setEvaluator(eval);

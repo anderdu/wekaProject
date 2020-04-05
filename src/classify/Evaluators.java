@@ -30,7 +30,7 @@ public class Evaluators {
 		File[] results = new File[2];
 		results = TransformRaw.transformRaw(train, pvisualTracking, model);
 		File trainBOWall = results[1];
-		File trainBOW = FeatureSubSel.apply(trainBOWall, "0");
+		File trainBOW = FeatureSubSel.apply(trainBOWall, "0",300);
 		Instances data = null;
 		DataSource source = new DataSource(trainBOW.getAbsolutePath());
 		data = source.getDataSet();
@@ -50,10 +50,14 @@ public class Evaluators {
 		return eval.fMeasure(minIndex);
 	}
 	public static Double holOut(File fTrain,Classifier classificador, Integer iterations, Integer percentage, String pvisualTracking, String model) throws Exception {
+		return holOut2(fTrain, classificador, iterations, percentage, pvisualTracking, model)[0];
+	}
+	public static Double[] holOut2(File fTrain,Classifier classificador, Integer iterations, Integer percentage, String pvisualTracking, String model) throws Exception {
 		System.out.println("============  using evaluator holOut   ==============");
 
 		ArrayList<Double> fMeasureValues = new ArrayList<Double>();
-		
+		ArrayList<Double> tpr = new ArrayList<Double>();
+		Double[] emaitza = new Double[2];
 		for (int i = 0; i < iterations; i++) { //cantidad de veces que hacemos hold out
 			Instances data = AppUtils.file2instances(fTrain.getAbsolutePath(), "0");//arff fitxategi baten instantziak lortzen ditu 
 			Instances[] trainANDtest= datuakZatitu(data,percentage);//datu partiketa metodo baten konprimituta
@@ -67,7 +71,7 @@ public class Evaluators {
 			
 			Instances insTrainBOW = AppUtils.file2instances(fileTrainBOW.getAbsolutePath(), "0");
 			
-			Instances trainBOWsmall = FeatureSubSel.apply(insTrainBOW);
+			Instances trainBOWsmall = FeatureSubSel.apply(insTrainBOW,300);
 			File fTrainBOWsmall = AppUtils.ordenagailuanGorde(trainBOWsmall,fileTrainBOW);
 			File smallDict = AppUtils.bow2dict(fileTrainBOW.getAbsolutePath());
 			File fileDevCOMP = MakeCompatible.makeCompatible(fileDev, smallDict);
@@ -99,10 +103,13 @@ public class Evaluators {
 			System.out.println(eval.fMeasure(4));
 			System.out.println(eval.fMeasure(5));
 			fMeasureValues.add(eval.fMeasure(minIndex));
+			tpr.add(eval.pctCorrect());
 			
 			//System.exit(0);
 		}
-		return AppUtils.getMean(fMeasureValues);
+		emaitza[0] = AppUtils.getMean(fMeasureValues);
+		emaitza[1] = AppUtils.getMean(tpr);
+		return emaitza;
 	}
 	
 	public static void holdOutPrueba(String train, String test) {
@@ -141,7 +148,7 @@ public class Evaluators {
 		File fileTrainBOW = results[1];
 		
 		Instances trainBOWall = AppUtils.file2instances(fileTrainBOW.getAbsolutePath(), "0");
-		Instances trainBOW = FeatureSubSel.apply(trainBOWall);
+		Instances trainBOW = FeatureSubSel.apply(trainBOWall,300);
 
 		Evaluation eval = new Evaluation(trainBOW);
 		classificador.buildClassifier(trainBOW);
